@@ -3,10 +3,10 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
-                                                         // 6. симметричный обход
-using namespace std;                                     // 7. Не записывается в файл
+                                                         // очищать дерево
+using namespace std;                                     // Читка из файл
 using namespace chrono;
-                                                         // 9.Посмотреть пукт 5 на степике
+
 
 
 struct Tree{
@@ -134,6 +134,53 @@ void printTree(Tree* root, string indent = "", bool isLeft = false){
 
 
 
+void writeTree(Tree* root, ofstream& outFile, string indent, bool isLeft) {
+    if(root == nullptr){
+        return;
+    }
+
+    outFile << indent;
+
+    if(isLeft){
+        outFile << "*-- ";
+        indent += "|   ";
+    }
+    else{
+        outFile << "`-- ";
+        indent += "    ";
+    }
+
+    outFile << root->key << endl;
+
+    writeTree(root->left, outFile, indent, false);
+    writeTree(root->right, outFile, indent, true);
+}
+
+
+
+void writeOperations(Tree* root, const string& filename, int insertedValue, int deletedValue, int searchValue){
+
+    ofstream outFile(filename, ios::app);
+    if(!outFile){
+        cout << "Failed to open file: " << filename << endl;
+        return;
+    }
+
+
+    outFile << "Inserted value: " << insertedValue << endl;
+    outFile << "Deleted value: " << deletedValue << endl;
+    outFile << "Searched value: " << searchValue << endl;
+    outFile << "\nBinary tree:" << endl;
+
+    writeTree(root, outFile, "", true);
+    outFile << "\n------------------------------------------------------------------------------------\n\n";
+    outFile.close();
+
+    cout << "Binary tree written to file: " << filename << endl;
+}
+
+
+
 void bypassDirect(Tree* root){
     if(root == nullptr){
         return;
@@ -158,13 +205,13 @@ void bypassReverse(Tree* root){
 
 
 
-void bypassIsWidth(Tree* root){
+void bypassSymmetrical(Tree* root){
     if(root == nullptr){
         return;
     }
-    bypassIsWidth(root->left);
+    bypassSymmetrical(root->left);
     cout << root->key << " ";
-    bypassIsWidth(root->right);
+    bypassSymmetrical(root->right);
 }
 
 
@@ -176,6 +223,7 @@ void deleteTree(Tree *root){
 
     deleteTree(root->left);
     deleteTree(root->right);
+
     delete root;
 }
 
@@ -185,20 +233,25 @@ int main() {
 
     Tree* root = nullptr;
     vector<int> elements;
+    int insertedValue, deletedValue, searchValue;
+
 
     while(true){
         int choice;
         cout << "\nChoice an option:\n";
         cout << "1. Create a binary tree with random numbers\n";
         cout << "2. Create a binary tree from entered numbers\n";
-        cout << "3. FILE\n";
+        cout << "3. Output a binary tree from file\n";
         cout << "4. Print binary tree\n";
         cout << "5. Insert an element\n";
         cout << "6. Delete an element\n";
         cout << "7. Get an element\n";
         cout << "8. Direct bypass binary tree\n";
         cout << "9. Reverse bypass binary tree\n";
-        cout << "10. Bypass in width binary tree\n";
+        cout << "10. Symmetrical bypass binary tree\n";
+        cout << "11. Write tree and options to file\n";
+        cout << "12. Clear tree\n";
+        cout << "13. Exit\n";
         cout << "Choice: ";
         cin >> choice;
         cout << "\n------------------------------------------------------------------------------------\n";
@@ -249,7 +302,14 @@ int main() {
                 break;
             }
             case 3: {
+                ifstream File;
+                File.open("C:\\Users\\User\\CLionProjects\\coursework2\\output_tree.txt");
+                if(File.is_open()){
 
+                }
+                else{
+                    cout << "Error";
+                }
                 break;
             }
             case 4: {
@@ -264,15 +324,18 @@ int main() {
                 break;
             }
             case 5: {
-                int insertValue;
+                int value;
                 cout << "Enter the element to insert: ";
-                cin >> insertValue;
+                cin >> value;
 
                 auto start = high_resolution_clock::now();
 
-                insertNode(root, insertValue);
+                insertNode(root, value);
+                insertedValue = value;
 
                 auto end = high_resolution_clock::now();
+
+                cout << "Value: " << value << " inserted into the binary tree\n";
 
                 auto duration = duration_cast<nanoseconds>(end - start);
                 cout << "Time taken to insert element: " << duration.count() << " ns\n";
@@ -281,15 +344,18 @@ int main() {
                 break;
             }
             case 6: {
-                int deleteValue;
+                int value;
                 cout << "Enter the element to delete: ";
-                cin >> deleteValue;
+                cin >> value;
 
                 auto start = high_resolution_clock::now();
 
-                deleteNode(root, deleteValue);
+                deleteNode(root, value);
+                deletedValue = value;
 
                 auto end = high_resolution_clock::now();
+
+                cout << "Value: " << value << " deleted from the binary tree\n";
 
                 auto duration = duration_cast<nanoseconds>(end - start);
                 cout << "Time taken to delete element: " << duration.count() << " ns\n";
@@ -298,23 +364,24 @@ int main() {
                 break;
             }
             case 7: {
-                int valueToSearch;
+                int value;
                 cout << "Search an element: ";
-                cin >> valueToSearch;
+                cin >> value;
 
                 auto start = high_resolution_clock::now();
 
-                Tree* foundNode = searchNode(root, valueToSearch);
+                Tree* foundNode = searchNode(root, value);
                 if(foundNode){
-                    cout << "Element found: " << foundNode->key << endl;
+                    searchValue = value;
+                    cout << "Value: " << value << " found in the binary tree\n";
                 }
                 else {
-                    cout << "Element not found\n";
+                    cout << "Value: " << value << " not found in the binary tree\n";
                 }
                 auto end = high_resolution_clock::now();
 
-                auto duration = duration_cast<milliseconds>(end - start);
-                cout << "Time taken to get element " << duration.count() << "ms\n";
+                auto duration = duration_cast<nanoseconds>(end - start);
+                cout << "Time taken to get element " << duration.count() << "ns\n";
                 cout << "\n------------------------------------------------------------------------------------\n";
                 break;
             }
@@ -335,15 +402,40 @@ int main() {
                 break;
             }
             case 10: {
-                cout << "Bypass in width: ";
-                bypassIsWidth(root);
+                cout << "Symmetrical bypass: ";
+                bypassSymmetrical(root);
                 cout << endl;
                 printTree(root);
                 cout << "\n------------------------------------------------------------------------------------\n";
                 break;
             }
+            case 11: {
+                string path = "C:\\Users\\User\\CLionProjects\\coursework2\\tree.txt";
+
+                ofstream fout;
+
+                fout.open(path, ofstream::app);
+
+                if(!fout.is_open()){
+                    cout << "File opening error\n";
+                }
+                else{
+                    writeOperations(root, path, insertedValue, deletedValue, searchValue);
+                }
+                break;
+            }
+            case 12: {
+                deleteTree(root);
+                cout << "Tree is clean\n";
+                cout << "\n------------------------------------------------------------------------------------\n";
+                break;
+            }
+            case 13: {
+                return 0;
+            }
             default: {
-                cout << "Error\n";
+                cout << "Invalid option. Please try again\n";
+                cout << "\n------------------------------------------------------------------------------------\n";
                 break;
             }
         }
