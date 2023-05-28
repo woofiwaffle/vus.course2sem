@@ -9,13 +9,13 @@ The program does the following:
 
 1. Formation of a binary tree of N elements:
 
-a) the user enters the number of elements N of the binary tree, which is automatically filled with random numbers (-99 to 99);
+   a) the user enters the number of elements N of the binary tree, which is automatically filled with random numbers (-99 to 99);
 
-b) the user enters array elements into the console, N is determined automatically by the number of entered elements;
+   b) the user enters array elements into the console, N is determined automatically by the number of entered elements;
 
-c) elements are read from a file that stores an array of numbers, N is the number of elements in the file.
+   c) elements are read from a file that stores an array of numbers, N is the number of elements in the file.
 
-Determining the rate of formation of a binary tree.
+   Determining the rate of formation of a binary tree.
 
 2. Output to the console and file tree of the binary tree.
 3. Determining the speed of inserting, deleting and getting a tree element.
