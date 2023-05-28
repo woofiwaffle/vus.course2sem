@@ -3,8 +3,8 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
-                                                         // очищать дерево
-using namespace std;                                     // Читка из файл
+
+using namespace std;
 using namespace chrono;
 
 
@@ -134,7 +134,7 @@ void printTree(Tree* root, string indent = "", bool isLeft = false){
 
 
 
-void writeTree(Tree* root, ofstream& outFile, string indent, bool isLeft) {
+void writeTree(Tree* root, ofstream& outFile, string indent, bool isLeft){
     if(root == nullptr){
         return;
     }
@@ -159,7 +159,6 @@ void writeTree(Tree* root, ofstream& outFile, string indent, bool isLeft) {
 
 
 void writeOperations(Tree* root, const string& filename, int insertedValue, int deletedValue, int searchValue){
-
     ofstream outFile(filename, ios::app);
     if(!outFile){
         cout << "Failed to open file: " << filename << endl;
@@ -216,27 +215,13 @@ void bypassSymmetrical(Tree* root){
 
 
 
-void deleteTree(Tree *root){
-    if(root == nullptr){
-        return;
-    }
-
-    deleteTree(root->left);
-    deleteTree(root->right);
-
-    delete root;
-}
-
-
-
 int main() {
 
     Tree* root = nullptr;
     vector<int> elements;
     int insertedValue, deletedValue, searchValue;
 
-
-    while(true){
+    while (true) {
         int choice;
         cout << "\nChoice an option:\n";
         cout << "1. Create a binary tree with random numbers\n";
@@ -255,7 +240,7 @@ int main() {
         cout << "Choice: ";
         cin >> choice;
         cout << "\n------------------------------------------------------------------------------------\n";
-        switch(choice){
+        switch (choice) {
             case 1: {
                 int numElements;
                 cout << "Enter the number of elements:";
@@ -305,11 +290,15 @@ int main() {
                 ifstream File;
                 File.open("C:\\Users\\User\\CLionProjects\\coursework2\\output_tree.txt");
                 if(File.is_open()){
-
+                    char ch;
+                    while(File.get(ch)){
+                        cout << ch;
+                    }
                 }
                 else{
                     cout << "Error";
                 }
+                File.close();
                 break;
             }
             case 4: {
@@ -370,12 +359,12 @@ int main() {
 
                 auto start = high_resolution_clock::now();
 
-                Tree* foundNode = searchNode(root, value);
+                Tree *foundNode = searchNode(root, value);
                 if(foundNode){
                     searchValue = value;
                     cout << "Value: " << value << " found in the binary tree\n";
                 }
-                else {
+                else{
                     cout << "Value: " << value << " not found in the binary tree\n";
                 }
                 auto end = high_resolution_clock::now();
@@ -425,7 +414,7 @@ int main() {
                 break;
             }
             case 12: {
-                deleteTree(root);
+                elements.clear();
                 cout << "Tree is clean\n";
                 cout << "\n------------------------------------------------------------------------------------\n";
                 break;
